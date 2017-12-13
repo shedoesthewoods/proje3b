@@ -3,6 +3,7 @@ package com.company;
 public class Tree {
     private TreeNode root;
     private int nodeNum = 0;
+    private int[] depthList;
 
     public Tree(){
         root = null;
@@ -42,27 +43,81 @@ public class Tree {
     }
 
     //Ağaçtan bilgisi verilen düğümü silen metod
-    public TreeNode delete(TreeNode node, String data){ //art arda node silinecekse yine bak
-        if(root == null) return null;
-        if (node == null) return null;
-        if (data.compareTo(node.data.toString()) < 0)
-            node.left = delete(node.left, data);
-        else if (data.compareTo(node.data.toString()) > 0)
-            node.right = delete(node.right, data);
-        else{
-            if (node.left != null || node.right != null){
-                node.data = minValue(node.right).data;
-                node.right = delete(node.right, minValue(node.right).toString());
+    public TreeNode delete(String data){
+        TreeNode current = root;
+        TreeNode parent = root;
+        boolean isLeftChild = true;
+
+        while(!current.data.toString().equals(data)){
+            parent = current;
+            if(data.compareTo(current.data.toString()) < 0){
+                isLeftChild = true;
+                current = current.left;
             }
-            else if (node.left == null)
-                return node.right;
-            else if (node.right == null)
-                return node.left;
-            else
-                node = null;
+            else{
+                isLeftChild = false;
+                current = current.right;
+            }
+            if(current == null)
+                return null;
         }
-        nodeNum--;
-        return node;
+
+        if (current.left == null && current.right == null){
+            if(current == root)
+                root = null;
+            else if(isLeftChild)
+                parent.left = null;
+            else
+                parent.right = null;
+        }
+
+        else if(current.right==null)
+            if(current == root)
+                root = current.left;
+            else if(isLeftChild)
+                parent.left = current.left;
+            else
+                parent.right = current.left;
+
+        else if(current.left==null)
+            if(current == root)
+                root = current.right;
+            else if(isLeftChild)
+                parent.left = current.right;
+            else
+                parent.right = current.right;
+
+        else{
+            TreeNode successor = getSuccessor(current);
+            if(current == root)
+                root = successor;
+            else if(isLeftChild)
+                parent.left = successor;
+            else
+                parent.right = successor;
+
+            successor.left = current.left;
+        }
+        return current;
+    }
+
+    //Delete metodunda silinecek olan düğümün yerine geçecek düğümü bulan metod
+    private TreeNode getSuccessor(TreeNode delNode)
+    {
+        TreeNode successorParent = delNode;
+        TreeNode successor = delNode;
+        TreeNode current = delNode.right;
+        while(current != null){
+            successorParent = successor;
+            successor = current;
+            current = current.left;
+        }
+
+        if(successor != delNode.right){
+            successorParent.left = successor.right;
+            successor.right = delNode.right;
+        }
+        return successor;
     }
 
     //Bilgisi verilen düğümü ağaçta bulan metod
@@ -101,34 +156,23 @@ public class Tree {
         return nodeNum;
     }
 
-    /**
-     *
-     * @return
-     *
-     * başka bir şey istiyormuş
-     */
-
-    //Ağacın her bir derinlikteki ortalama düğüm sayısını dizide döndüren metod
-    public int[] average(){
+    //Düğümlerin derinlik ortalamasını bulduran metod
+    public int average(){
         int maxDepth = depth((root));
-        int[] averages = new int[maxDepth];
-        findDepthElementSum(root, averages, 0);
-        int temp;
+        int total = 0;
         for(int i = 0; i < maxDepth; i++){
-            temp = averages[i]/nodeNum;
-            averages[i] = temp;
+            total += depthList[i] * i;
         }
-        return averages;
+        return total / nodeNum;
     }
 
     //Her bir derinlikte kaç düğüm olduğunu bulan metod
-    public void findDepthElementSum(TreeNode node, int[] depthList, int depth){
+    public void findDepths(TreeNode node, int depth){
         if (node == null) return;
         depth++;
-        findDepthElementSum(node.left, depthList, depth);
+        findDepths(node.left, depth);
         depthList[depth]++;
-        depth--;
-        findDepthElementSum(node.right, depthList, depth);
+        findDepths(node.right, depth);
     }
 
     //Ağacın boş olup olmadığını döndüren metod
