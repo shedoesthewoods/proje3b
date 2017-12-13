@@ -5,6 +5,6 @@ public class TreeNode {
     public TreeNode left, right;
 
     public void displayNode(){
-        System.out.println(" " + data.toString() + " ");
+        System.out.println(data.toString());
     }
 }
