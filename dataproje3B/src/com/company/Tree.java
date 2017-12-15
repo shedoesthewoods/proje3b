@@ -3,7 +3,7 @@ package com.company;
 public class Tree {
     private TreeNode root;
     private int nodeNum = 0;
-    private int[] depthList;
+    private int[] depthList = new int[10];
 
     public Tree(){
         root = null;
@@ -120,30 +120,6 @@ public class Tree {
         return successor;
     }
 
-    //Bilgisi verilen düğümü ağaçta bulan metod
-    public TreeNode find(String data){
-        if(root == null) return null;
-
-        TreeNode temp = root;
-        boolean found = false;
-        while(!found){
-            if(temp.data.toString().equals(data)){
-                found = true;
-            }
-            else if(temp.data.toString().compareTo(data) < 0)
-                temp = temp.right;
-            else
-                temp = temp.left;
-        }
-        return temp;
-    }
-
-    //Verilen düğümün alt ağacının en küçük değerini döndüren metod
-    public TreeNode minValue(TreeNode node){
-        if (node.left == null) return node;
-        return minValue(node.left);
-    }
-
     //Ağacın derinliğini döndüren metod
     //Metodu çağırırken argümanı kök düğümü olmalıdır
     public int depth(TreeNode node){
@@ -157,10 +133,10 @@ public class Tree {
     }
 
     //Düğümlerin derinlik ortalamasını bulduran metod
-    public int average(){
+    public double average(){
         int maxDepth = depth((root));
-        int total = 0;
-        for(int i = 0; i < maxDepth; i++){
+        double total = 0;
+        for(int i = 0; i < 10; i++){
             total += depthList[i] * i;
         }
         return total / nodeNum;

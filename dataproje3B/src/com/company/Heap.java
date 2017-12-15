@@ -3,99 +3,128 @@ package com.company;
 public class Heap { //Max heap
     //Heap sınıfında tutulmak üzere oluşturulmuş iç sınıf
     class Node {
-        private int iData;
-        public Node(int key) {
-            iData = key;
+        private double data;
+        public Node(double key) {
+            data = key;
         }
-        public int getKey() {
-            return iData;
+        public double getKey() {
+            return data;
         }
-        public void setKey(int id) {
-            iData = id;
+        public void setKey(double key) {
+            data = key;
         }
     }
 
     private Node[] heapArray;
-    private int maxSize;
-    private int currentSize;
+    private int maxSize;           // size of array
+    private int currentSize;       // number of nodes in array
 
-    public Heap(int mx) {
+    public Heap(int mx)            // constructor
+    {
         maxSize = mx;
         currentSize = 0;
-        heapArray = new Node[maxSize];
+        heapArray = new Node[maxSize];  // create array
     }
 
-    public boolean isEmpty() {
-        return currentSize == 0;
-    }
+    public boolean isEmpty()
+    { return currentSize == 0; }
 
-    public boolean insert(int key) {
+    public boolean insert(double key)
+    {
         if (currentSize == maxSize)
             return false;
         Node newNode = new Node(key);
         heapArray[currentSize] = newNode;
-        currentSize++;
-        trickleUp(currentSize);
+        trickleUp(currentSize++);
         return true;
-    }
+    }  // end insert()
 
-    public void trickleUp(int index) {
+    public void trickleUp(int index)
+    {
         int parent = (index - 1) / 2;
         Node bottom = heapArray[index];
 
-        while (index > 0 && heapArray[parent].getKey() < bottom.getKey()) {
-            heapArray[index] = heapArray[parent];
+        while (index > 0 &&
+                heapArray[parent].getKey() < bottom.getKey())
+        {
+            heapArray[index] = heapArray[parent];  // move it down
             index = parent;
             parent = (parent - 1) / 2;
-        }
+        }  // end while
         heapArray[index] = bottom;
-    }
+    }  // end trickleUp()
 
-    public Node remove() {
+    public double remove()           // En yüksek değere sahip elemanı siler
+    {
         Node root = heapArray[0];
         heapArray[0] = heapArray[--currentSize];
         trickleDown(0);
-        return root;
+        return root.data;
     }
+    public double removeMin()
+    {
+        double min = heapArray[0].getKey();
+        int minindex = 0;
+        for (int i = 0; i < currentSize; i++)
+        {
+            if (min > heapArray[i].getKey())
+            {
+                min = heapArray[i].getKey();
+                minindex = i;
+            }
+        }
+        heapArray[minindex].setKey(1000);
+        return min;
 
-    public Node removeMin(){
-        Node leaf = heapArray[maxSize - 1];
-        maxSize--;
-        return leaf;
     }
-
     public void trickleDown(int index)
     {
         int largerChild;
-        Node top = heapArray[index];
-        while (index < currentSize / 2) {
+        Node top = heapArray[index];       // save root
+        while (index < currentSize / 2)       // while node has at
+        {                               //    least one child,
             int leftChild = 2 * index + 1;
             int rightChild = leftChild + 1;
-
-            if (rightChild < currentSize && heapArray[leftChild].getKey() < heapArray[rightChild].getKey())
+            // find larger child
+            if (rightChild < currentSize &&  // (rightChild exists?)
+                    heapArray[leftChild].getKey() <
+                            heapArray[rightChild].getKey())
                 largerChild = rightChild;
             else
                 largerChild = leftChild;
-
+            // top >= largerChild?
             if (top.getKey() >= heapArray[largerChild].getKey())
                 break;
-
+            // shift child up
             heapArray[index] = heapArray[largerChild];
-            index = largerChild;
-        }
-        heapArray[index] = top;
+            index = largerChild;            // go down
+        }  // end while
+        heapArray[index] = top;            // root to index
     }
+    // end trickleDown()
 
-    public boolean change(int index, int newValue) {
+    public boolean change(int index, int newValue)
+    {
         if (index < 0 || index >= currentSize)
             return false;
-        int oldValue = heapArray[index].getKey();
-        heapArray[index].setKey(newValue);
+        double oldValue = heapArray[index].getKey(); // remember old
+        heapArray[index].setKey(newValue);  // change to new
 
-        if (oldValue < newValue)
-            trickleUp(index);
-        else
-            trickleDown(index);
+        if (oldValue < newValue)             // if raised,
+            trickleUp(index);                // trickle it up
+        else                                // if lowered,
+            trickleDown(index);              // trickle it down
         return true;
+    }  // end change()
+
+
+    public void displayHeap()
+    {
+        for (int m = 0; m < currentSize; m++)
+            if (heapArray[m] != null)
+                System.out.println(heapArray[m].getKey() + " ");
+            else
+                System.out.println("-- ");
+        System.out.println();
     }
 }
